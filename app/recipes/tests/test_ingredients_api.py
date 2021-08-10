@@ -19,7 +19,7 @@ class PublicIngredientsApiTest(TestCase):
     def test_login_required(self):
         """Test that login required for retrieving ingredients"""
         res = self.client.get(INGREDIENTS_URL)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class PrivateIngredientApiTest(TestCase):
@@ -71,6 +71,5 @@ class PrivateIngredientApiTest(TestCase):
 
     def test_create_ingredient_invalid(self):
         """Test wether ingredients validations are performed"""
-        res = self.client.post(INGREDIENTS_URL,{})
-        self.assertEqual(res.status_code,status.HTTP_400_BAD_REQUEST)
-
+        res = self.client.post(INGREDIENTS_URL, {})
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

@@ -6,39 +6,30 @@ from core.models import Ingredient, Tag
 from recipes import serializers
 
 
-class TagViewSet(viewsets.GenericViewSet,
-                 mixins.ListModelMixin,
-                 mixins.CreateModelMixin):
-    """"Manage tags in the database"""
-    serializer_class = serializers.TagSerializer
+class BaseRecipeAttrViewSet(viewsets.GenericViewSet,
+                            mixins.ListModelMixin,
+                            mixins.CreateModelMixin):
+    """Base viewset for user owned recipe attribute"""
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
-    queryset = Tag.objects.all()
-
-    def get_queryset(self):
-        """Return object for current loggied in user"""
-        return self.queryset \
-                   .filter(user=self.request.user.id).order_by('-name')
-
-    def perform_create(self, serializer):
-        """Create a new tag"""
-        serializer.save(user=self.request.user)
-
-
-class IngredientViewSet(viewsets.GenericViewSet,
-                        mixins.ListModelMixin,
-                        mixins.CreateModelMixin):
-    """Manage ingredients in the database"""
-    serializer_class = serializers.IngredientSerializer
-    authetication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
-    queryset = Ingredient.objects.all()
 
     def get_queryset(self):
         """Return object for current logged in users"""
         return self.queryset \
                    .filter(user=self.request.user.id).order_by('-name')
 
-    def perform_create(self,serializer):
+    def perform_create(self, serializer):
         """Create a new ingredient"""
         serializer.save(user=self.request.user)
+
+
+class TagViewSet(BaseRecipeAttrViewSet):
+    """"Manage tags in the database"""
+    serializer_class = serializers.TagSerializer
+    queryset = Tag.objects.all()
+
+
+class IngredientViewSet(BaseRecipeAttrViewSet):
+    """Manage ingredients in the database"""
+    serializer_class = serializers.IngredientSerializer
+    queryset = Ingredient.objects.all()
